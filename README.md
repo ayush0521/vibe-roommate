@@ -1,8 +1,8 @@
 <h1 align="center">🏠 Vibe Roommate</h1>
 
 <p align="center">
-  A college-centric roommate and student housing matching platform<br>
-  focused on <b>lifestyle compatibility</b>, <b>trust</b>, and <b>college-first design</b>.
+  A compatibility-first roommate matching platform for college students<br>
+  focused on <b>lifestyle alignment</b>, <b>reduced conflicts</b>, and <b>better shared living</b>.
 </p>
 
 <hr>
@@ -10,14 +10,13 @@
 <h2>📌 Project Overview</h2>
 
 <p>
-  <b>Vibe Roommate</b> is designed to solve a common but poorly addressed problem faced by college students:
-  <b>incompatible roommates</b>.
+  <b>Vibe Roommate</b> is a full-stack web application designed to solve one of the most common yet overlooked problems in student housing:
+  <b>roommate incompatibility</b>.
 </p>
 
 <p>
-  Most housing platforms focus only on rent, location, or availability.
-  This project introduces a <b>vibe-based matching system</b> that prioritizes
-  daily lifestyle compatibility to reduce conflicts and improve long-term living experiences.
+  Unlike traditional housing platforms that prioritize rent and location, this system introduces a 
+  <b>behavior-based matching approach</b> using a structured <b>vibe quiz</b> and compatibility scoring.
 </p>
 
 <hr>
@@ -25,115 +24,110 @@
 <h2>🎯 Problem Statement</h2>
 
 <ul>
-  <li>Roommate conflicts are usually caused by lifestyle mismatches, not rent or location</li>
-  <li>Students often relocate frequently due to poor roommate compatibility</li>
-  <li>Existing platforms lack structured, explainable compatibility logic</li>
+  <li>Roommate conflicts arise due to lifestyle mismatches (not just rent or location)</li>
+  <li>Students frequently change accommodations due to incompatibility</li>
+  <li>Existing platforms lack structured compatibility evaluation</li>
 </ul>
 
 <p>
-  This project treats roommate matching as a <b>human compatibility problem</b>,
-  not just a real-estate listing problem.
+  This project treats roommate matching as a <b>behavioral compatibility problem</b> rather than a purely real-estate problem.
 </p>
 
 <hr>
 
-<h2>🧠 Core Idea</h2>
+<h2>🧠 Core Concept</h2>
 
 <p>
-  Users complete a short, structured <b>vibe quiz</b> covering lifestyle factors such as:
+  The system collects user preferences through a structured <b>Vibe Quiz</b>, including:
 </p>
 
 <ul>
   <li>Sleep schedule</li>
-  <li>Cleanliness expectations</li>
+  <li>Cleanliness level</li>
   <li>Noise tolerance</li>
-  <li>Social habits</li>
-  <li>Daily routines</li>
+  <li>Study habits</li>
+  <li>Social behavior</li>
 </ul>
 
 <p>
-  The system generates:
+  Based on responses, the system generates:
 </p>
 
 <ul>
-  <li>A <b>vibe profile</b></li>
-  <li>A <b>compatibility score</b> between users and room listings</li>
+  <li><b>Vibe badges</b> (user personality indicators)</li>
+  <li><b>Compatibility score</b> between users</li>
 </ul>
 
 <p>
-  Matching logic is <b>rule-based and explainable</b> — no black-box AI.
-</p>
-
-<hr>
-
-<h2>👥 Who This Is For</h2>
-
-<ul>
-  <li><b>College students</b> searching for compatible roommates</li>
-  <li><b>Students with vacant rooms or beds</b></li>
-  <li><b>Room / PG owners</b> targeting verified college students</li>
-</ul>
-
-<p>
-  The platform is intentionally <b>college-focused</b> to improve trust and adoption.
+  Matching is <b>rule-based and explainable</b> to ensure transparency.
 </p>
 
 <hr>
 
-<h2>⚙️ MVP Features (Planned)</h2>
+<h2>👥 Target Users</h2>
 
-<h3>For Roommate Seekers</h3>
 <ul>
-  <li>User onboarding with basic verification</li>
-  <li>10-question lifestyle-based vibe quiz</li>
-  <li>Vibe badge and compatibility score</li>
-  <li>Apply to roommate or room listings</li>
-  <li>In-app messaging</li>
-</ul>
-
-<h3>For Room / Bed Listers</h3>
-<ul>
-  <li>Create room or vacancy listings</li>
-  <li>Upload room photos</li>
-  <li>Add distance from nearby colleges</li>
-  <li>View applicants with compatibility scores</li>
+  <li><b>College students</b> looking for compatible roommates</li>
+  <li><b>Students with available rooms/beds</b></li>
+  <li><b>PG/hostel providers</b> targeting student users</li>
 </ul>
 
 <hr>
 
-<h2>🔍 Matching Principles</h2>
+<h2>⚙️ Core Features</h2>
 
 <ul>
-  <li><b>Compatibility-first</b>, not just availability</li>
-  <li><b>Explainable scoring logic</b></li>
-  <li><b>Trust & safety</b> over open marketplaces</li>
-  <li>Designed for real college use cases</li>
+  <li>User authentication (Register / Login)</li>
+  <li>Vibe quiz for lifestyle profiling</li>
+  <li>Badge generation system</li>
+  <li>Compatibility matching engine</li>
+  <li>Room listings module</li>
+  <li>Basic messaging system</li>
 </ul>
 
 <hr>
 
-<h2>🚧 Current Status</h2>
+<h2>🔍 Matching Logic</h2>
 
 <p>
-  <b>Early Development – MVP Phase</b>
+  Compatibility is calculated using a simple rule-based approach:
 </p>
 
+<pre>
+Match Score = (Matching Preferences / Total Preferences) × 100
+</pre>
+
 <ul>
-  <li>Defining MVP scope</li>
-  <li>Designing vibe quiz and scoring logic</li>
-  <li>Setting up frontend and backend architecture</li>
+  <li>90–100% → Perfect Match</li>
+  <li>70–89% → Good Match</li>
+  <li>50–69% → Moderate Match</li>
+  <li>Below 50% → Risky Match</li>
 </ul>
 
 <hr>
 
-<h2>🛠️ Tech Stack (Planned)</h2>
+<h2>🏗️ System Architecture</h2>
+
+<pre>
+Frontend (React)
+        ↓
+Backend (Node.js + Express)
+        ↓
+Database (MongoDB)
+        ↓
+Matching & Badge Services
+</pre>
+
+<hr>
+
+<h2>🛠️ Tech Stack</h2>
 
 <ul>
-  <li><b>Frontend:</b> React / Next.js</li>
-  <li><b>Backend:</b> Node.js / Express</li>
-  <li><b>Database:</b> MongoDB or PostgreSQL</li>
-  <li><b>Authentication:</b> Email / college-based verification</li>
-  <li><b>Deployment:</b> Vercel / Render (TBD)</li>
+  <li><b>Frontend:</b> React.js</li>
+  <li><b>Backend:</b> Node.js + Express.js</li>
+  <li><b>Database:</b> MongoDB</li>
+  <li><b>Authentication:</b> JWT-based login system</li>
+  <li><b>API Communication:</b> Axios</li>
 </ul>
 
 <hr>
@@ -142,35 +136,67 @@
 
 <pre>
 vibe-roommate/
-├── docs/
+│
 ├── frontend/
+│   └── src/
+│       ├── pages/
+│       ├── components/
+│       ├── services/
+│       ├── App.js
+│       └── index.js
+│
 ├── backend/
-├── diagrams/
+│   ├── models/
+│   ├── routes/
+│   ├── controllers/
+│   ├── services/
+│   ├── config/
+│   └── server.js
+│
+├── docs/
+│   ├── diagrams/
+│   └── reports/
+│
 ├── README.md
-├── LICENSE
 └── .gitignore
 </pre>
 
 <hr>
 
-<h2>🤝 Contributions</h2>
+<h2>🚧 Development Status</h2>
 
 <p>
-  Contributors are welcome in the following areas:
+  <b>Currently in early development phase (MVP stage)</b>
 </p>
 
 <ul>
-  <li>Frontend development</li>
-  <li>Backend APIs</li>
-  <li>Database schema design</li>
-  <li>UX/UI for quizzes and listings</li>
-  <li>Matching logic & scoring</li>
-  <li>Documentation and testing</li>
+  <li>Project structure initialized</li>
+  <li>Core modules planned (Auth, Quiz, Matching)</li>
+  <li>Backend and frontend setup in progress</li>
 </ul>
 
-<p>
-  This is a <b>learning-friendly but execution-driven project</b>.
-</p>
+<hr>
+
+<h2>🚀 Roadmap</h2>
+
+<ul>
+  <li><b>15%:</b> Authentication + Quiz + Basic Matching</li>
+  <li><b>30%:</b> Listings + Messaging + Dashboard</li>
+  <li><b>50%:</b> Improved UI + Filters + Profile System</li>
+  <li><b>100%:</b> Full integration + polished system + deployment</li>
+</ul>
+
+<hr>
+
+<h2>🤝 Contribution</h2>
+
+<ul>
+  <li>Frontend development (React)</li>
+  <li>Backend APIs (Node.js)</li>
+  <li>Database schema design</li>
+  <li>Matching logic improvements</li>
+  <li>UI/UX enhancements</li>
+</ul>
 
 <hr>
 
@@ -184,12 +210,6 @@ vibe-roommate/
 
 <div align="center">
 
-  <div style="font-size: 38px; line-height: 1;">
-    🧑‍💻
-  </div>
-
-  <p>
-    <b>Built by Ayush Padmawar</b><br>
-  </p>
+  <p><b>Built by Ayush Padmawar</b></p>
 
 </div>

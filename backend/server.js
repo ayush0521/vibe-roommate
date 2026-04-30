@@ -4,15 +4,17 @@ const connectDB = require("./config/db");
 
 const app = express();
 
-// ✅ THIS LINE IS MANDATORY
+// middleware
 app.use(express.json());
-
 app.use(cors());
+app.use("/api/listings", require("./routes/listingRoutes"));
 
+// DB
 connectDB();
 
 // routes
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/listings", require("./routes/listingRoutes")); // 🔥 THIS LINE
 
 const PORT = 5000;
 

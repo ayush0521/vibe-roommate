@@ -2,27 +2,55 @@ const jwt = require("jsonwebtoken");
 
 const authMiddleware = (req, res, next) => {
   try {
-    // 1. get token from header
-    const token = req.headers.authorization;
+    const authHeader = req.header("Authorization");
 
-    if (!token) {
-      return res.status(401).json({ message: "No token, access denied" });
+    // 🔍 Debug (keep during development)
+    console.log("🔐 AUTH HEADER:", authHeader);
+
+    // ❌ No header
+    if (!authHeader) {
+      return res.status(401).json({
+        message: "No token provided",
+      });
     }
 
-    // 2. remove "Bearer "
-    const actualToken = token.startsWith("Bearer ")
-      ? token.slice(7)
-      : token;
+    // ❌ Wrong format
+    if (!authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Invalid token format",
+      });
+    }
 
-    // 3. verify token
-    const decoded = jwt.verify(actualToken, "mysecretkey");
+    // ✅ Extract token
+    const token = authHeader.split(" ")[1];
 
-    // 4. attach user info to request
-    req.user = decoded;
+    console.log("🔑 TOKEN:", token);
 
-    next(); // move to next step
-  } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
+    // ❌ Missing secret (very common mistake)
+    if (!process.env.JWT_SECRET) {
+      console.error("❌ JWT_SECRET is not defined in .env");
+      return res.status(500).json({
+        message: "Server configuration error",
+      });
+    }
+
+    // ✅ Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    console.log("✅ DECODED:", decoded);
+
+    // 🔥 IMPORTANT: standardize user object
+    req.user = {
+      id: decoded.id,
+    };
+
+    next();
+  } catch (err) {
+    console.error("❌ JWT ERROR:", err.message);
+
+    return res.status(401).json({
+      message: "Invalid or expired token",
+    });
   }
 };
 

@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema(
   {
-    // 🔐 Basic Auth Info
+    // 🔐 Auth
     name: {
       type: String,
       required: true,
@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema(
       required: true
     },
 
-    // 🧍 Profile Attributes (for matching)
+    // 🧍 Profile (optional now, quiz will dominate)
     sleepTime: {
       type: String,
       enum: ["early", "late"]
@@ -50,13 +50,8 @@ const userSchema = new mongoose.Schema(
       enum: ["silent", "music", "group"]
     },
 
-    smoking: {
-      type: Boolean
-    },
-
-    drinking: {
-      type: Boolean
-    },
+    smoking: Boolean,
+    drinking: Boolean,
 
     budget: {
       type: Number,
@@ -73,15 +68,24 @@ const userSchema = new mongoose.Schema(
       enum: ["single", "double", "triple"]
     },
 
-    // 🏷 Verification Badges (future-ready)
+    // 🏷 Badges
     badges: {
       type: [String],
       default: []
+    },
+
+    // 🧠 QUIZ (MAIN DRIVER NOW)
+    quiz: {
+      cleanliness: { type: Number, min: 1, max: 5 },
+      socialLevel: { type: Number, min: 1, max: 5 },
+      studyStyle: String,
+      foodType: String,
+      sleepType: String,
+      smoking: Boolean,
+      drinking: Boolean
     }
   },
-  {
-    timestamps: true
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("User", userSchema);

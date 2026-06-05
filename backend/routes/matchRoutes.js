@@ -1,12 +1,13 @@
 const express = require("express");
 const router = express.Router();
+
 const authMiddleware = require("../middleware/authMiddleware");
 
-router.get("/", authMiddleware, async (req, res) => {
-  res.json({
-    currentUser: "Test User",
-    matches: []
-  });
-});
+const {
+  getMatches
+} = require("../controllers/matchController");
+
+// ✅ REAL MATCH ROUTE
+router.get("/", authMiddleware, getMatches);
 
 module.exports = router;

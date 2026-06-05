@@ -1,51 +1,86 @@
 const Message = require("../models/Message");
 
-// 📤 SEND MESSAGE
+
+// 💬 SEND MESSAGE
 exports.sendMessage = async (req, res) => {
   try {
-    const senderId = req.user.id;
-    const { receiverId, text } = req.body;
 
+    const senderId = req.user.id;
+
+    const {
+      receiverId,
+      text
+    } = req.body;
+
+    // 🚫 Validation
     if (!receiverId || !text) {
-      return res.status(400).json({ message: "Missing fields" });
+      return res.status(400).json({
+        message: "Receiver ID and message text are required"
+      });
     }
 
-    const message = await Message.create({
+    // ✅ Create message
+    const newMessage = await Message.create({
       sender: senderId,
       receiver: receiverId,
-      text,
+      text
     });
 
-    res.status(201).json(message);
-  } catch (err) {
-    console.error("Send Message Error:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(201).json({
+      message: "Message sent successfully",
+      data: newMessage
+    });
+
+  } catch (error) {
+
+    console.error("SEND MESSAGE ERROR:", error);
+
+    res.status(500).json({
+      message: "Failed to send message",
+      error: error.message
+    });
   }
 };
 
-// 📥 GET CHAT BETWEEN TWO USERS
+
+
+// 📩 GET CHAT HISTORY
 exports.getMessages = async (req, res) => {
   try {
-    const currentUserId = req.user.id;
-    const otherUserId = req.params.userId;
 
+    const currentUserId = req.user.id;
+
+    const otherUserId = req.params.id;
+
+    // ✅ Fetch conversation
     const messages = await Message.find({
       $or: [
-        { sender: currentUserId, receiver: otherUserId },
-        { sender: otherUserId, receiver: currentUserId },
-      ],
-    }).sort({ createdAt: 1 });
 
-    // 🔥 THIS IS THE IMPORTANT PART
-    const formatted = messages.map((msg) => ({
-      text: msg.text,
-      isMine: msg.sender.toString() === currentUserId,
-      createdAt: msg.createdAt,
-    }));
+        // Current user → other user
+        {
+          sender: currentUserId,
+          receiver: otherUserId
+        },
 
-    res.json(formatted);
-  } catch (err) {
-    console.error("Get Messages Error:", err);
-    res.status(500).json({ message: "Server error" });
+        // Other user → current user
+        {
+          sender: otherUserId,
+          receiver: currentUserId
+        }
+
+      ]
+    })
+      .sort({ createdAt: 1 });
+
+    res.json(messages);
+
+  } catch (error) {
+
+    console.error("GET MESSAGE ERROR:", error);
+
+    res.status(500).json({
+      message: "Failed to fetch messages",
+      error: error.message
+    });
   }
 };

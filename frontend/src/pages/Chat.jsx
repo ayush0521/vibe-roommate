@@ -1,149 +1,381 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import { apiRequest } from "../services/api";
+
 const Chat = () => {
-  const { userId } = useParams(); // receiver ID
+
+  const { id } = useParams();
+
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState("");
 
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+
+  const messagesEndRef = useRef(null);
+
+  // 🔥 Current User
   const token = localStorage.getItem("token");
 
-  // 🔁 Fetch messages
-  const fetchMessages = async () => {
-    try {
-      const res = await fetch(
-        `http://localhost:5000/api/message/${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
 
-      const data = await res.json();
-      setMessages(data || []);
+
+  // =========================
+  // FETCH MESSAGES
+  // =========================
+  const fetchMessages = async () => {
+
+    try {
+
+      const data = await apiRequest(`/messages/${id}`);
+
+      console.log("CHAT DATA:", data);
+
+      setMessages(Array.isArray(data) ? data : []);
+
     } catch (err) {
-      console.error("Fetch messages error:", err);
+
+      console.error("FETCH MESSAGE ERROR:", err.message);
+
+    } finally {
+
+      setLoading(false);
     }
   };
 
-  // 📤 Send message
+
+
+  // =========================
+  // SEND MESSAGE
+  // =========================
   const sendMessage = async () => {
+
     if (!text.trim()) return;
 
     try {
-      await fetch("http://localhost:5000/api/message", {
+
+      setSending(true);
+
+      await apiRequest("/messages", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+
         body: JSON.stringify({
-          receiverId: userId,
-          text,
-        }),
+          receiverId: id,
+          text: text.trim()
+        })
       });
 
+      // ✅ Clear input
       setText("");
-      fetchMessages();
+
+      // ✅ Refresh instantly
+      await fetchMessages();
+
     } catch (err) {
-      console.error("Send error:", err);
+
+      console.error("SEND MESSAGE ERROR:", err.message);
+
+      alert("Failed to send message");
+
+    } finally {
+
+      setSending(false);
     }
   };
 
-  // ⏱ Auto refresh every 3 sec (simple realtime)
+
+
+  // =========================
+  // INITIAL LOAD
+  // =========================
   useEffect(() => {
+
     fetchMessages();
 
-    const interval = setInterval(fetchMessages, 3000);
+  }, [id]);
+
+
+
+  // =========================
+  // AUTO REFRESH
+  // =========================
+  useEffect(() => {
+
+    const interval = setInterval(() => {
+
+      fetchMessages();
+
+    }, 3000);
+
     return () => clearInterval(interval);
-  }, [userId]);
+
+  }, [id]);
+
+
+
+  // =========================
+  // AUTO SCROLL
+  // =========================
+  useEffect(() => {
+
+    messagesEndRef.current?.scrollIntoView({
+      behavior: "smooth"
+    });
+
+  }, [messages]);
+
+
+
+  // =========================
+  // GOOGLE MEET
+  // =========================
+  const openMeet = () => {
+
+    window.open(
+      "https://meet.google.com/new",
+      "_blank"
+    );
+  };
+
+
+
+  // =========================
+  // LOADING SCREEN
+  // =========================
+  if (loading) {
+
+    return (
+      <div style={styles.center}>
+        <h2>Loading chat...</h2>
+      </div>
+    );
+  }
+
+
 
   return (
-    <div style={styles.container}>
-      <h2>💬 Chat</h2>
+    <div style={styles.page}>
 
+
+      {/* HEADER */}
+      <div style={styles.header}>
+
+        <h2>💬 Chat Room</h2>
+
+        <button
+          style={styles.meetButton}
+          onClick={openMeet}
+        >
+          🎥 Google Meet
+        </button>
+
+      </div>
+
+
+
+      {/* CHAT AREA */}
       <div style={styles.chatBox}>
-        {messages.length === 0 && (
-          <p style={{ textAlign: "center", color: "#888" }}>
+
+
+        {messages.length === 0 ? (
+
+          <p style={{ color: "#666" }}>
             No messages yet
           </p>
+
+        ) : (
+
+          messages.map((msg) => {
+
+            const isSender =
+              String(msg.sender) !== String(id);
+
+            return (
+
+              <div
+                key={msg._id}
+                style={{
+                  ...styles.message,
+
+                  alignSelf:
+                    isSender
+                      ? "flex-end"
+                      : "flex-start",
+
+                  background:
+                    isSender
+                      ? "#007bff"
+                      : "#e4e6eb",
+
+                  color:
+                    isSender
+                      ? "#fff"
+                      : "#000"
+                }}
+              >
+
+                {msg.text}
+
+              </div>
+            );
+          })
         )}
 
-        {messages.map((msg, i) => (
-          <div
-            key={i}
-            style={{
-              ...styles.message,
-              alignSelf: msg.isMine ? "flex-end" : "flex-start",
-              background: msg.isMine ? "#4CAF50" : "#eee",
-              color: msg.isMine ? "#fff" : "#000",
-            }}
-          >
-            {msg.text}
-          </div>
-        ))}
+
+        <div ref={messagesEndRef} />
+
       </div>
 
-      <div style={styles.inputRow}>
+
+
+      {/* INPUT AREA */}
+      <div style={styles.inputContainer}>
+
+
         <input
+          type="text"
+
+          placeholder="Type your message..."
+
           value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Type a message..."
+
+          onChange={(e) =>
+            setText(e.target.value)
+          }
+
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              sendMessage();
+            }
+          }}
+
           style={styles.input}
         />
-        <button onClick={sendMessage} style={styles.button}>
-          Send
+
+
+        <button
+          onClick={sendMessage}
+
+          style={styles.button}
+
+          disabled={sending}
+        >
+
+          {sending
+            ? "Sending..."
+            : "Send"}
+
         </button>
+
       </div>
+
     </div>
   );
 };
 
+
+
+// =========================
+// STYLES
+// =========================
 const styles = {
-  container: {
+
+  page: {
+    height: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    background: "#f5f7fb"
+  },
+
+  header: {
     padding: "20px",
-    maxWidth: "600px",
-    margin: "auto",
+    background: "#fff",
+    borderBottom: "1px solid #ddd",
+
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center"
+  },
+
+  meetButton: {
+    background: "#0f9d58",
+    color: "#fff",
+    border: "none",
+    padding: "10px 16px",
+    borderRadius: "10px",
+    cursor: "pointer",
+    fontWeight: "bold"
   },
 
   chatBox: {
-    height: "400px",
+    flex: 1,
+    padding: "20px",
+
     overflowY: "auto",
+
     display: "flex",
     flexDirection: "column",
-    gap: "8px",
-    border: "1px solid #ddd",
-    padding: "10px",
-    borderRadius: "8px",
-    background: "#fafafa",
+
+    gap: "10px"
   },
 
   message: {
-    padding: "8px 12px",
-    borderRadius: "10px",
-    maxWidth: "70%",
+    padding: "12px 16px",
+
+    borderRadius: "14px",
+
+    maxWidth: "60%",
+
+    wordBreak: "break-word"
   },
 
-  inputRow: {
+  inputContainer: {
     display: "flex",
-    marginTop: "10px",
-    gap: "8px",
+
+    padding: "15px",
+
+    background: "#fff",
+
+    borderTop: "1px solid #ddd"
   },
 
   input: {
     flex: 1,
-    padding: "10px",
+
+    padding: "12px",
+
+    borderRadius: "10px",
+
+    border: "1px solid #ccc",
+
+    marginRight: "10px"
   },
 
   button: {
-    padding: "10px 16px",
-    background: "#4CAF50",
-    color: "#fff",
+    padding: "12px 20px",
+
     border: "none",
+
+    borderRadius: "10px",
+
+    background: "#007bff",
+
+    color: "#fff",
+
     cursor: "pointer",
-    borderRadius: "6px",
+
+    fontWeight: "bold"
   },
+
+  center: {
+    height: "100vh",
+
+    display: "flex",
+
+    justifyContent: "center",
+
+    alignItems: "center"
+  }
 };
 
 export default Chat;

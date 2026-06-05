@@ -1,106 +1,129 @@
-const getColor = (score) => {
-  if (score >= 60) return "#2ecc71";
-  if (score >= 40) return "#f1c40f";
-  return "#e74c3c";
+import { useNavigate } from "react-router-dom";
+
+const getCompatibilityColor = (percentage) => {
+  if (percentage >= 75) return "#2ecc71"; // green
+  if (percentage >= 50) return "#f39c12"; // orange
+  return "#e74c3c"; // red
 };
 
 const Card = ({ match, index }) => {
-  const score = match?.compatibility?.score || 0;
-  const color = getColor(score);
+  const navigate = useNavigate();
 
-  const openMeet = () => {
+  const percentage = match.compatibility?.percentage || 0;
+
+  const color = getCompatibilityColor(percentage);
+
+  // 💬 Open Chat
+  const handleMessage = () => {
+    navigate(`/chat/${match.id}`);
+  };
+
+  // 🎥 Open Google Meet
+  const handleMeet = () => {
     window.open("https://meet.google.com/new", "_blank");
   };
 
-  const openChat = () => {
-    window.location.href = `/chat/${match.id}`;
-  };
-
   return (
-    <div style={{ ...styles.card, borderLeft: `6px solid ${color}` }}>
-      
-      {/* ⭐ Top Match */}
+    <div style={styles.card}>
+
+      {/* ⭐ Top Match Badge */}
       {index === 0 && (
-        <div style={styles.topBadge}>⭐ Top Match</div>
+        <div style={styles.topBadge}>
+          ⭐ Top Match
+        </div>
       )}
 
       {/* 👤 Name */}
-      <h2 style={styles.name}>{match.name}</h2>
+      <h2 style={styles.name}>
+        {match.name}
+      </h2>
 
       {/* 🔥 Compatibility */}
-      <div style={styles.scoreRow}>
-        <span style={{ ...styles.label, color }}>
-          {match.compatibility.label}
-        </span>
-        <span style={{ ...styles.score, color }}>
-          {score}
-        </span>
-      </div>
-
-      <p style={styles.type}>🏷 {match.compatibility.type}</p>
-
-      {/* 🧍 Traits */}
-      <div style={styles.section}>
-        <strong>Traits</strong>
-        <div style={styles.traitsGrid}>
-          <span>🧼 {match.traits.cleanliness}</span>
-          <span>🎉 {match.traits.socialLevel}</span>
-          <span>💰 ₹{match.traits.budget}</span>
+      <div style={styles.compatibilitySection}>
+        <div style={styles.progressBackground}>
+          <div
+            style={{
+              ...styles.progressFill,
+              width: `${percentage}%`,
+              background: color
+            }}
+          />
         </div>
+
+        <p style={{ ...styles.percentage, color }}>
+          {percentage}% Match
+        </p>
+
+        <p style={styles.label}>
+          {match.compatibility?.label}
+        </p>
+
+        <p style={styles.type}>
+          {match.compatibility?.type}
+        </p>
       </div>
 
-      {/* 🏷 Badges */}
+      {/* 🏷️ Badges */}
       <div style={styles.section}>
-        <strong>Badges</strong>
-        <div style={styles.chips}>
-          {(match.badges || []).map((b, i) => (
-            <span key={i} style={styles.chip}>{b}</span>
+        <h4>🏷️ Badges</h4>
+
+        <div style={styles.badgesContainer}>
+          {match.badges?.map((badge, i) => (
+            <span key={i} style={styles.badge}>
+              {badge}
+            </span>
           ))}
         </div>
       </div>
 
       {/* ✅ Highlights */}
       <div style={styles.section}>
-        <strong>Why it works</strong>
-        <div style={styles.chips}>
-          {(match.highlights || []).map((h, i) => (
-            <span key={i} style={{ ...styles.chip, background: "#e8f8f0" }}>
-              {h}
-            </span>
+        <h4>✅ Why You Match</h4>
+
+        <ul style={styles.list}>
+          {match.highlights?.map((item, i) => (
+            <li key={i}>{item}</li>
           ))}
-        </div>
+        </ul>
       </div>
 
       {/* ⚠️ Concerns */}
       <div style={styles.section}>
-        <strong>Watchouts</strong>
-        <div style={styles.chips}>
-          {match.concerns?.length === 0 ? (
-            <span style={styles.chip}>No major concerns</span>
-          ) : (
-            (match.concerns || []).map((c, i) => (
-              <span key={i} style={{ ...styles.chip, background: "#fdecea" }}>
-                {c}
-              </span>
-            ))
-          )}
-        </div>
+        <h4>⚠️ Concerns</h4>
+
+        {match.concerns?.length === 0 ? (
+          <p>No major concerns</p>
+        ) : (
+          <ul style={styles.list}>
+            {match.concerns?.map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* 💡 Explanation */}
-      <p style={styles.explanation}>
-        💡 {match.explanation}
-      </p>
+      <div style={styles.explanationBox}>
+        <p>{match.explanation}</p>
+      </div>
 
-      {/* 🎯 ACTION BUTTONS */}
-      <div style={styles.actions}>
-        <button style={styles.chatBtn} onClick={openChat}>
-          💬 Chat
+      {/* 🔘 Actions */}
+      <div style={styles.buttonContainer}>
+
+        <button
+          style={styles.messageButton}
+          onClick={handleMessage}
+        >
+          💬 Message
         </button>
 
-        <button style={{ ...styles.meetBtn, background: color }} onClick={openMeet}>
-          🎥 Meet
+        <button
+          style={styles.meetButton}
+          onClick={handleMeet}
+        >
+          🎥 Google Meet
         </button>
+
       </div>
     </div>
   );
@@ -108,102 +131,117 @@ const Card = ({ match, index }) => {
 
 const styles = {
   card: {
-    position: "relative",
+    width: "350px",
     background: "#fff",
-    padding: "18px",
-    margin: "14px 0",
-    borderRadius: "12px",
-    boxShadow: "0 6px 16px rgba(0,0,0,0.08)",
-    transition: "0.2s ease"
+    borderRadius: "16px",
+    padding: "20px",
+    boxShadow: "0 4px 14px rgba(0,0,0,0.1)",
+    position: "relative"
   },
 
   topBadge: {
     position: "absolute",
-    top: -10,
-    right: 10,
+    top: "-10px",
+    right: "15px",
     background: "#ffd700",
-    padding: "4px 10px",
-    borderRadius: "8px",
-    fontSize: "12px",
-    fontWeight: "bold"
+    padding: "6px 12px",
+    borderRadius: "20px",
+    fontWeight: "bold",
+    fontSize: "12px"
   },
 
   name: {
-    marginBottom: 6
+    marginBottom: "15px"
   },
 
-  scoreRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center"
+  compatibilitySection: {
+    marginBottom: "20px"
+  },
+
+  progressBackground: {
+    width: "100%",
+    height: "10px",
+    background: "#eee",
+    borderRadius: "10px",
+    overflow: "hidden"
+  },
+
+  progressFill: {
+    height: "100%"
+  },
+
+  percentage: {
+    marginTop: "10px",
+    fontWeight: "bold",
+    fontSize: "20px"
   },
 
   label: {
-    fontWeight: "bold"
-  },
-
-  score: {
-    fontWeight: "bold",
-    fontSize: "18px"
+    fontWeight: "600",
+    marginTop: "5px"
   },
 
   type: {
     color: "#666",
-    marginBottom: 8
+    marginTop: "5px"
   },
 
   section: {
-    marginTop: 10
+    marginTop: "20px"
   },
 
-  traitsGrid: {
-    display: "flex",
-    gap: "10px",
-    marginTop: "6px"
-  },
-
-  chips: {
+  badgesContainer: {
     display: "flex",
     flexWrap: "wrap",
-    gap: 6,
-    marginTop: 6
+    gap: "8px",
+    marginTop: "10px"
   },
 
-  chip: {
-    padding: "4px 8px",
-    borderRadius: "6px",
+  badge: {
     background: "#eef2ff",
-    fontSize: "12px"
+    padding: "6px 10px",
+    borderRadius: "20px",
+    fontSize: "13px"
   },
 
-  explanation: {
-    marginTop: 10,
+  list: {
+    paddingLeft: "20px",
+    marginTop: "10px"
+  },
+
+  explanationBox: {
+    background: "#f8f9fa",
+    padding: "12px",
+    borderRadius: "10px",
+    marginTop: "20px",
     fontStyle: "italic",
     color: "#444"
   },
 
-  actions: {
+  buttonContainer: {
     display: "flex",
     gap: "10px",
-    marginTop: "14px"
+    marginTop: "20px"
   },
 
-  chatBtn: {
+  messageButton: {
     flex: 1,
-    padding: "10px",
-    background: "#34495e",
-    color: "#fff",
+    padding: "12px",
     border: "none",
-    borderRadius: "8px",
-    cursor: "pointer"
+    borderRadius: "10px",
+    background: "#007bff",
+    color: "#fff",
+    cursor: "pointer",
+    fontWeight: "bold"
   },
 
-  meetBtn: {
+  meetButton: {
     flex: 1,
-    padding: "10px",
-    color: "#fff",
+    padding: "12px",
     border: "none",
-    borderRadius: "8px",
+    borderRadius: "10px",
+    background: "#2ecc71",
+    color: "#fff",
     cursor: "pointer",
     fontWeight: "bold"
   }

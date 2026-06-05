@@ -43,7 +43,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/match", matchRoutes);
 app.use("/api/listings", listingRoutes);
 app.use("/api/quiz", quizRoutes);
-app.use("/api/message", messageRoutes);
+app.use("/api/messages", messageRoutes);
 
 // ========================
 // ❌ ERROR HANDLER (IMPORTANT)

@@ -1,17 +1,28 @@
 const express = require("express");
+
 const router = express.Router();
+
+const authMiddleware = require("../middleware/authMiddleware");
 
 const {
   sendMessage,
-  getMessages,
+  getMessages
 } = require("../controllers/messageController");
 
-const auth = require("../middleware/authMiddleware");
 
-// POST → send message
-router.post("/", auth, sendMessage);
+// 💬 Send Message
+router.post(
+  "/",
+  authMiddleware,
+  sendMessage
+);
 
-// GET → fetch chat
-router.get("/:userId", auth, getMessages);
+
+// 📩 Get Conversation Messages
+router.get(
+  "/:id",
+  authMiddleware,
+  getMessages
+);
 
 module.exports = router;

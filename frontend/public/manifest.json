@@ -1,0 +1,17 @@
+{
+  "name": "VibeRoommate",
+  "short_name": "VibeRM",
+  "description": "Student Roommate & Housing Platform Nanded",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a1628",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/pwa-logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

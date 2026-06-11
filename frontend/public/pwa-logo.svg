@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <rect width="512" height="512" rx="128" fill="#10b981"/>
+  <!-- House shape -->
+  <path d="M256 100 L400 240 L350 240 L350 400 L280 400 L280 300 L232 300 L232 400 L162 400 L162 240 L112 240 Z" fill="#ffffff"/>
+  <!-- Letter V styled line in green -->
+  <path d="M226 200 L256 250 L286 200" fill="none" stroke="#10b981" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
